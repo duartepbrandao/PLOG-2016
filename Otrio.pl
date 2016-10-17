@@ -1,6 +1,10 @@
+:- use_module(library(lists)).
+
 /**********GETS & SETS***********/
 
 
+
+getCell(Line,Col,Pos,Tab,Cell) :- getPiece(Line,Col,Tab,Piece), getCol(Pos,Piece,Cell).
 
 getPiece(Line,Col,Tab,Piece) :- getLine(Line, Tab, Linelist), 
 									getCol(Col, Linelist, Piece).
@@ -42,6 +46,19 @@ list([' ',' ',' ']).
 
 game:- tab(Board), printboard(Board).
 
+
+
 /**********GAME FUNCTIONS***********/
 
-play(Player, Size, Line, Col).
+test(A1,A2,Atomo) :- name(A1,[Char1]), name(A2,[Char2]), name(Atomo,[Char1,Char2]).
+
+makePlay(Player, Size, Line, Col, Tab1, Tab2) :- Size == 'big', playBig(Player, Line, Col, Tab1, Tab2);
+												 Size == 'medium', playMedium(Player, Line, Col, Tab1, Tab2);
+												 Size == 'small', playSmall(Player, Line, Col, Tab1, Tab2).
+												 
+
+playBig(Player, Line, Col, Tab1, Tab2) :- getCell(Line,Col,1,Tab1,Cell), Cell == 'b0', test('b',Player,Piece), setPiece(Line,Col,1,Piece, Tab1, Tab2).
+playMedium(Player, Line, Col, Tab1, Tab2) :- getCell(Line,Col,2,Tab1,Cell), Cell == 'm0', test('m',Player,Piece), setPiece(Line,Col,2,Piece, Tab1, Tab2).
+playSmall(Player, Line, Col, Tab1, Tab2) :- getCell(Line,Col,3,Tab1,Cell), Cell == 's0', test('s',Player,Piece), setPiece(Line,Col,3,Piece, Tab1, Tab2).
+
+
