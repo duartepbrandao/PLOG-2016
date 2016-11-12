@@ -38,8 +38,8 @@ setHand(Line,Col,Piece,Hand1,Hand2) :- getLine(Line,Hand1,Cell), setCol(Col,Cell
 
 
 
-tab([[[b0,m0,s0],[b1,m0,s0],[b0,m0,s0]],
-	 [[b1,m0,s0],[b1,m0,s0],[b0,m0,s0]],
+tab([[[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]],
+	 [[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]],
 	 [[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]]
 	]).
 
@@ -58,6 +58,8 @@ choosePlayerNr(NrPlayers),
 gamecycle(Board,Hand1,1,NrPlayers).
 
 gamecycle(Board, Hand, CurrentPlayer, NrPlayers) :-
+nl,nl,
+/* check pieces player 1 */
 printboard(Board),
 /* print hand */
 printHand(Hand,CurrentPlayer),
@@ -139,7 +141,7 @@ read(Line-Col).
 
 /**********ITEMS**********/
 
-hand([[3,3,3],[3,3,3],[3,3,3],[3,3,3]]).
+hand([[1,1,1],[1,1,1],[3,3,3],[3,3,3]]).
 /*winCond(Player, List)*/
 winCondLocal(1, [b1,m1,s1]).
 winCondLocal(2, [b2,m2,s2]).
