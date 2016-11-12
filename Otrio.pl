@@ -1,4 +1,5 @@
 :- use_module(library(lists)).
+:- use_module(library(between)).
 
 /**********GETS & SETS***********/
 
@@ -51,11 +52,15 @@ printboard([X|List]) :-
 	
 list([' ',' ',' ']).
 
-game:- tab(Board), hand(Hand1),/*escolher modo de jogo*/ /*Escolher nr jogadores (NrPlayers) */ gamecycle(Board,Hand1,1,2).
+game:- tab(Board), hand(Hand1),/*escolher modo de jogo*/ 
+/*Escolher nr jogadores (NrPlayers) */
+choosePlayerNr(NrPlayers),
+gamecycle(Board,Hand1,1,NrPlayers).
 
 gamecycle(Board, Hand, CurrentPlayer, NrPlayers) :-
 printboard(Board),
 /* print hand */
+printHand(Hand,CurrentPlayer),
 
 choosePiece(CurrentPlayer, Size),
 choosePos(CurrentPlayer, Line, Col),
@@ -74,8 +79,34 @@ makePlay(CurrentPlayer, Size, Col, Line, Hand, NewHand,Board,NewBoard),
 ).
 
 
+choosePlayerNr(NrPlayers):-
+nl,
+write('How many Players? (2 to 4)'),
+nl,
+read(NrPlayers),
+between(2,4,NrPlayers);
+write('Must be between 2 and 4'),
+choosePlayerNr(NrPlayers).
 
 
+printHand(Hand,CurrentPlayer):-
+nl,
+write('Player '),
+write(CurrentPlayer),
+write(', you have in your hand:'),
+nl,
+getPiece(CurrentPlayer, 1, Hand, Value1),
+write(Value1),
+write('xBig'),
+nl,
+getPiece(CurrentPlayer, 2, Hand, Value2),
+write(Value2),
+write('xMedium'),
+nl,
+getPiece(CurrentPlayer, 3, Hand, Value3),
+write(Value3),
+write('xSmall'),
+nl,nl.
 
 changePlayer(CurrentPlayer,1, CurrentPlayer).
 changePlayer(CurrentPlayer, NewCurrentPlayer, NrPlayers):-
