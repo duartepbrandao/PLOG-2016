@@ -39,11 +39,16 @@ setHand(Line,Col,Piece,Hand1,Hand2) :- getLine(Line,Hand1,Cell), setCol(Col,Cell
 
 
 
-tab([[[b1,m0,s0],[b1,m0,s0],[b0,m0,s0]],
-	 [[b1,m1,s0],[b1,m0,s0],[b0,m0,s0]],
+tab([[[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]],
+	 [[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]],
 	 [[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]]
 	]).
 
+test([[[b1,m0,s0],[b0,m1,s0],[b0,m0,s1]],
+	 [[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]],
+	 [[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]]
+	]).
+	
 piece1([b1,m0,s0]).
 piece2([b1,m0,s3]).
 piece3([b1,m2,s0]).
@@ -189,7 +194,11 @@ playSmall(Player, Line, Col, Tab1, Tab2) :- getCell(Line,Col,3,Tab1,Cell), Cell 
 
 checkWin(Player, Size, Tab, Line, Col):- (checkLocalWin(Player, Tab, Line, Col), winner(Player);
 										 checkLineWin(Player, Size, Tab, 1), winner(Player);
-										 checkColWin(Player, Size, Tab, 1), winner(Player)),!.
+										 checkColWin(Player, Size, Tab, 1), winner(Player);
+										 checkLineSeqWin(Player, Tab, 1), winner(Player);
+										 checkColSeqWin(Player, Tab, 1), winner(Player);
+										 checkDiagWin(Player, Size, Tab), winner(Player)
+										 ),!.
 
 
 checkLocalWin(Player, Tab, Line, Col):- (getPiece(Line, Col, Tab, Cell), winCondLocal(Player, A), Cell == A).
@@ -199,7 +208,7 @@ checkLineWin(Player, Size, Tab, Line):- Line < 3,
 										getPiece(Line, 1, Tab, Cell1),
 										getPiece(Line, 2, Tab, Cell2),
 										getPiece(Line, 3, Tab, Cell3), 
-										winCond(Player, Size, A), 
+										winCond(Player, Size, A),  
 										(member(A,Cell1), member(A,Cell2), member(A,Cell3);
 										NewLine is Line + 1, checkLineWin(Player, Size, Tab, NewLine)).
 
@@ -220,7 +229,65 @@ checkColWin(Player, Size, Tab, 3):- getPiece(1, Col, Tab, Cell1),
 									getPiece(2, Col, Tab, Cell2), 
 									getPiece(3, Col, Tab, Cell3), 
 									winCond(Player, Size, A), (member(A,Cell1), member(A,Cell2), member(A,Cell3)).
-									 
+									
+checkLineSeqWin(Player, Tab, Line):- Line < 3,
+									 getPiece(Line, 1, Tab, Cell1),
+									 getPiece(Line, 2, Tab, Cell2),
+									 getPiece(Line, 3, Tab, Cell3), 
+									 winCond(Player, big, A),  
+									 winCond(Player, medium, B), 
+									 winCond(Player, small, C), 
+									(member(A,Cell1), member(B,Cell2), member(C,Cell3);
+									member(C,Cell1), member(B,Cell2), member(A,Cell3);
+									NewLine is Line + 1, checkLineSeqWin(Player, Tab, NewLine)).
+
+checkLineSeqWin(Player, Tab, 3):- getPiece(Line, 1, Tab, Cell1),
+								  getPiece(Line, 2, Tab, Cell2),
+								  getPiece(Line, 3, Tab, Cell3), 
+								  winCond(Player, big, A),  
+								  winCond(Player, medium, B), 
+								  winCond(Player, small, C), 
+								  (member(A,Cell1), member(B,Cell2), member(C,Cell3);
+								  member(C,Cell1), member(B,Cell2), member(A,Cell3)).
+									
+checkColSeqWin(Player, Tab, Col):- Col < 3,
+									 getPiece(1, Col, Tab, Cell1),
+									 getPiece(2, Col, Tab, Cell2),
+									 getPiece(3, Col, Tab, Cell3), 
+									 winCond(Player, big, A),  
+									 winCond(Player, medium, B), 
+									 winCond(Player, small, C), 
+									(member(A,Cell1), member(B,Cell2), member(C,Cell3);
+									member(C,Cell1), member(B,Cell2), member(A,Cell3);
+									NewCol is Col + 1, checkColSeqWin(Player, Tab, NewCol)).
+									
+checkColSeqWin(Player, Tab, 3):- getPiece(1, Col, Tab, Cell1),
+								   getPiece(2, Col, Tab, Cell2),
+								   getPiece(3, Col, Tab, Cell3), 
+							       winCond(Player, big, A),  
+								   winCond(Player, medium, B), 
+							       winCond(Player, small, C), 
+								   (member(A,Cell1), member(B,Cell2), member(C,Cell3);
+								   member(C,Cell1), member(B,Cell2), member(A,Cell3)).
+								   
+checkDiagWin(Player, Size, Tab):- getPiece(1, 1, Tab, Cell1),
+							      getPiece(2, 2, Tab, Cell2),
+						          getPiece(3, 3, Tab, Cell3), 
+								  getPiece(3, 1, Tab, Cell4), 
+								  getPiece(1, 3, Tab, Cell5), 
+								  winCond(Player, Size, A),
+								  winCond(Player, big, X),
+								  winCond(Player, medium, Y),
+								  winCond(Player, small, Z),
+								  (member(A,Cell1), member(A,Cell2), member(A,Cell3);
+								  member(A,Cell4), member(A,Cell2), member(A,Cell5);
+								  member(X,Cell1), member(Y,Cell2), member(Z,Cell3);
+								  member(Z,Cell1), member(Y,Cell2), member(X,Cell3);
+								  member(X,Cell4), member(Y,Cell2), member(Z,Cell5);
+								  member(Z,Cell4), member(Y,Cell2), member(X,Cell5)).
+								  
+								  
+
 									
 
 /*********** WIN CONS************/
