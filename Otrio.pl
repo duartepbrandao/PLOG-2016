@@ -38,11 +38,16 @@ setHand(Line,Col,Piece,Hand1,Hand2) :- getLine(Line,Hand1,Cell), setCol(Col,Cell
 
 
 
-tab([[[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]],
-	 [[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]],
-	 [[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]]
+
+tab([[[b0,m0,s0],[b1,m0,s0],[b0,m0,s0]],
+	 [[b1,m1,s0],[b1,m0,s0],[b0,m0,s0]],
+	 [[b0,m0,s0],[b1,m0,s0],[b0,m0,s0]]
 	]).
 
+piece1([b1,m0,s0]).
+piece2([b1,m0,s3]).
+piece3([b1,m2,s0]).
+	
 printboard([]):- !.
     
 printboard([X|List]) :-
@@ -148,22 +153,25 @@ winCondLocal(2, [b2,m2,s2]).
 winCondLocal(3, [b3,m3,s3]).
 winCondLocal(4, [b4,m4,s4]).
 
-winCond(1, 'big', [b1,_,_]).
-winCond(2, 'big', [b2,_,_]).
-winCond(3, 'big', [b3,_,_]).
-winCond(4, 'big', [b4,_,_]).
-winCond(1, 'medium', [_,m1,_]).
-winCond(2, 'medium', [_,m2,_]).
-winCond(3, 'medium', [_,m3,_]).
-winCond(4, 'medium', [_,m4,_]).
-winCond(1, 'small', [_,_,s1]).
-winCond(2, 'small', [_,_,s2]).
-winCond(3, 'small', [_,_,s3]).
-winCond(4, 'small', [_,_,s4]).
+winCond(1, 'big', b1).
+winCond(2, 'big', b2).
+winCond(3, 'big', b3).
+winCond(4, 'big', b4).
+winCond(1, 'medium', m1).
+winCond(2, 'medium', m2).
+winCond(3, 'medium', m3).
+winCond(4, 'medium', m4).
+winCond(1, 'small', s1).
+winCond(2, 'small', s2).
+winCond(3, 'small', s3).
+winCond(4, 'small', s4).
 
 winner(Player):-  nl, write('Player '), write(Player), write(' Won!!'), nl.
 
 /**********GAME FUNCTIONS***********/
+
+member(X,[X|Xs]).
+member(X,[Y|Ys]):- member(X,Ys).
 
 jointname(A1,A2,Atomo) :- name(A1,[Char1]), name(A2,[Char2]), name(Atomo,[Char1,Char2]).
 
@@ -179,7 +187,7 @@ playBig(Player, Line, Col, Tab1, Tab2) :- getCell(Line,Col,1,Tab1,Cell), Cell ==
 playMedium(Player, Line, Col, Tab1, Tab2) :- getCell(Line,Col,2,Tab1,Cell), Cell == 'm0', jointname('m',Player,Piece), setPiece(Line,Col,2,Piece, Tab1, Tab2).
 playSmall(Player, Line, Col, Tab1, Tab2) :- getCell(Line,Col,3,Tab1,Cell), Cell == 's0', jointname('s',Player,Piece), setPiece(Line,Col,3,Piece, Tab1, Tab2).
 
-checkWin(Player, Size, Tab, Line, Col):- (checkLocalWin(Player, Tab, Line, Col),  winner(Player);
+checkWin(Player, Size, Tab, Line, Col):- (checkLocalWin(Player, Tab, Line, Col), winner(Player);
 										 checkLineWin(Player, Size, Tab, 1), winner(Player);
 										 checkColWin(Player, Size, Tab, 1), winner(Player)),!.
 
@@ -192,27 +200,26 @@ checkLineWin(Player, Size, Tab, Line):- Line < 3,
 										getPiece(Line, 2, Tab, Cell2),
 										getPiece(Line, 3, Tab, Cell3), 
 										winCond(Player, Size, A), 
-										(Cell1 == A, Cell2 == A, Cell3 == A;
+										(member(A,Cell1), member(A,Cell2), member(A,Cell3);
 										NewLine is Line + 1, checkLineWin(Player, Size, Tab, NewLine)).
 
 checkLineWin(Player, Size, Tab, 3):- getPiece(Line, 1, Tab, Cell1), 
 									 getPiece(Line, 2, Tab, Cell2),
 									 getPiece(Line, 3, Tab, Cell3),
-									 winCond(Player, Size, A), (Cell1 == A, Cell2 == A, Cell3 == A).
+									 winCond(Player, Size, A), (member(A,Cell1), member(A,Cell2), member(A,Cell3)).
 									 
 checkColWin(Player, Size, Tab, Col):- Col < 3, 
-									  getPiece(NewLine0, 1, Tab, Cell1), 
-									  getPiece(NewLine1, 2, Tab, Cell2),
-									  getPiece(NewLine2, 3, Tab, Cell3), 
+									  getPiece(1, Col, Tab, Cell1), 
+									  getPiece(2, Col, Tab, Cell2),
+									  getPiece(3, Col, Tab, Cell3), 
 									  winCond(Player, Size, A),
-									  (Cell1 == A, Cell2 == A, Cell3 == A;
+									  (member(A,Cell1), member(A,Cell2), member(A,Cell3);
 									  NewCol is Col + 1, checkLineWin(Player, Size, Tab, NewCol)).
 									  
 checkColWin(Player, Size, Tab, 3):- getPiece(1, Col, Tab, Cell1), 
 									getPiece(2, Col, Tab, Cell2), 
 									getPiece(3, Col, Tab, Cell3), 
-									winCond(Player, Size, A),
-									(Cell1 == A, Cell2 == A, Cell3 == A).
+									winCond(Player, Size, A), (member(A,Cell1), member(A,Cell2), member(A,Cell3)).
 									 
 									
 
