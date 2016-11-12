@@ -84,7 +84,7 @@ nl,
 write('How many Players? (2 to 4)'),
 nl,
 read(NrPlayers),
-between(2,4,NrPlayers);
+between(2,4,NrPlayers),!;
 write('Must be between 2 and 4'),
 choosePlayerNr(NrPlayers).
 
@@ -97,15 +97,15 @@ write(', you have in your hand:'),
 nl,
 getPiece(CurrentPlayer, 1, Hand, Value1),
 write(Value1),
-write('xBig'),
+write('x Big'),
 nl,
 getPiece(CurrentPlayer, 2, Hand, Value2),
 write(Value2),
-write('xMedium'),
+write('x Medium'),
 nl,
 getPiece(CurrentPlayer, 3, Hand, Value3),
 write(Value3),
-write('xSmall'),
+write('x Small'),
 nl,nl.
 
 changePlayer(CurrentPlayer,1, CurrentPlayer).
@@ -119,7 +119,12 @@ write('Player '),
 write(CurrentPlayer),
 write(', choose the size of the piece:(big,medium or small)'),
 nl,
-	read(Size).
+	read(Size),
+	(Size=='big';
+	Size=='medium';
+	Size=='small');
+	write('Invalid Choice!!'),
+	choosePiece(CurrentPlayer,Size).
 
 choosePos(CurrentPlayer, Line, Col):-
 nl,
