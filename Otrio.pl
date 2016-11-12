@@ -39,9 +39,9 @@ setHand(Line,Col,Piece,Hand1,Hand2) :- getLine(Line,Hand1,Cell), setCol(Col,Cell
 
 
 
-tab([[[b0,m0,s0],[b1,m0,s0],[b0,m0,s0]],
+tab([[[b1,m0,s0],[b1,m0,s0],[b0,m0,s0]],
 	 [[b1,m1,s0],[b1,m0,s0],[b0,m0,s0]],
-	 [[b0,m0,s0],[b1,m0,s0],[b0,m0,s0]]
+	 [[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]]
 	]).
 
 piece1([b1,m0,s0]).
@@ -146,7 +146,7 @@ read(Line-Col).
 
 /**********ITEMS**********/
 
-hand([[1,1,1],[1,1,1],[3,3,3],[3,3,3]]).
+hand([[3,3,3],[3,3,3],[3,3,3],[3,3,3]]).
 /*winCond(Player, List)*/
 winCondLocal(1, [b1,m1,s1]).
 winCondLocal(2, [b2,m2,s2]).
@@ -214,7 +214,7 @@ checkColWin(Player, Size, Tab, Col):- Col < 3,
 									  getPiece(3, Col, Tab, Cell3), 
 									  winCond(Player, Size, A),
 									  (member(A,Cell1), member(A,Cell2), member(A,Cell3);
-									  NewCol is Col + 1, checkLineWin(Player, Size, Tab, NewCol)).
+									  NewCol is Col + 1, checkColWin(Player, Size, Tab, NewCol)).
 									  
 checkColWin(Player, Size, Tab, 3):- getPiece(1, Col, Tab, Cell1), 
 									getPiece(2, Col, Tab, Cell2), 
