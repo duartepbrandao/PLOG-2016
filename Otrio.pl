@@ -343,8 +343,13 @@ checkDiagWin(Player, Size, Tab):- getPiece(1, 1, Tab, Cell1),
 
 /*********** AI ************/
 
+randomizer(Size, Line, Col):- random(1,4,Value), random(1,4,Line), random(1,4,Col), piece(Value, Size).
 
-playAI(Player, Tab1, Tab2, Hand1, Hand2, Size, Line, Col):- random(1,3,Value), random(1,3,Line), random(1,3,Col), piece(Value, Size),
-										   Size == 'big', checkHand(Player, 1,Hand1,Hand2), playBig(Player, Line, Col, Tab1, Tab2);
-										   Size == 'medium', checkHand(Player, 2,Hand1,Hand2), playMedium(Player, Line, Col, Tab1, Tab2);
-										   Size == 'small', checkHand(Player, 3,Hand1,Hand2), playSmall(Player, Line, Col, Tab1, Tab2).
+playMoveAI(Player, Size, Line, Col, Hand1, Hand2, Tab1, Tab2):- Size == 'big', checkHand(Player, 1,Hand1,Hand2), playBig(Player, Line, Col, Tab1, Tab2);
+																Size == 'medium', checkHand(Player, 2,Hand1,Hand2), playMedium(Player, Line, Col, Tab1, Tab2);
+																Size == 'small', checkHand(Player, 3,Hand1,Hand2), playSmall(Player, Line, Col, Tab1, Tab2).
+
+playAI(Player, Tab1, Tab2, Hand1, Hand2, Size, Line, Col):- randomizer(Size, Line, Col),
+															playMoveAI(Player, Size, Line, Col, Hand1, Hand2, Tab1, Tab2).
+															
+playAI(Player, Tab1, Tab2, Hand1, Hand2, Size, Line, Col):- playAI(Player, Tab1, Tab2, Hand1, Hand2, Size, Line, Col).
