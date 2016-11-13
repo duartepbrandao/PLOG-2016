@@ -64,7 +64,7 @@ printboard([X|List]) :-
 	
 list([' ',' ',' ']).
 
-game:- tab(Board), hand(Hand1),/*escolher modo de jogo*/ 
+otrio:- tab(Board), hand(Hand1),/*escolher modo de jogo*/ 
 chooseGameMode(Mode),
 choosePlayerNr(NrPlayers),
 gamecycle(Board,Hand1,1,NrPlayers, Mode).
