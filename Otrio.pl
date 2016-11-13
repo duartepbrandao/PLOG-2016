@@ -1,5 +1,6 @@
 :- use_module(library(lists)).
 :- use_module(library(between)).
+:- use_module(library(random)).
 
 /**********GETS & SETS***********/
 
@@ -40,8 +41,8 @@ setHand(Line,Col,Piece,Hand1,Hand2) :- getLine(Line,Hand1,Cell), setCol(Col,Cell
 
 
 
-tab([[[b1,m0,s0],[b1,m0,s0],[b0,m0,s0]],
-	 [[b0,m1,s0],[b0,m0,s0],[b0,m0,s0]],
+tab([[[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]],
+	 [[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]],
 	 [[b0,m0,s0],[b0,m0,s0],[b0,m0,s0]]
 	]).
 
@@ -64,16 +65,20 @@ printboard([X|List]) :-
 list([' ',' ',' ']).
 
 game:- tab(Board), hand(Hand1),/*escolher modo de jogo*/ 
-/*Escolher nr jogadores (NrPlayers) */
+chooseGameMode(Mode),
 choosePlayerNr(NrPlayers),
-gamecycle(Board,Hand1,1,NrPlayers).
+gamecycle(Board,Hand1,1,NrPlayers, Mode).
 
-gamecycle(Board, Hand, CurrentPlayer, NrPlayers) :-
+gamecycle(Board, Hand, CurrentPlayer, NrPlayers, Mode) :-
 nl,nl,
-/* check pieces player 1 */
+
 checkEndGame(Hand,CurrentPlayer);
+
+(Mode == 'multi' ->
 printboard(Board),
-/* print hand */
+nl,
+write('Multiplayer'),
+nl,
 printHand(Hand,CurrentPlayer),
 
 choosePiece(CurrentPlayer, Size),
@@ -88,13 +93,47 @@ makePlay(CurrentPlayer, Size, Col, Line, Hand, NewHand,Board,NewBoard),
 
 /* senao change Player */
    changePlayer(CurrentPlayer,NewCurrentPlayer,NrPlayers),
-   gamecycle(NewBoard, NewHand, NewCurrentPlayer, NrPlayers)
+   gamecycle(NewBoard, NewHand, NewCurrentPlayer, NrPlayers, Mode)
   )
-).
+));
+
+
+(Mode == 'single' ->
+printboard(Board),
+nl,
+write('Singleplayer'),
+nl,
+printHand(Hand,CurrentPlayer),
+
+(CurrentPlayer == 1 ->
+choosePiece(CurrentPlayer, Size),
+choosePos(CurrentPlayer, Line, Col),
+makePlay(CurrentPlayer, Size, Col, Line, Hand, NewHand,Board,NewBoard);
+CurrentPlayer > 1 ->
+playAI(CurrentPlayer, Board, NewBoard, Hand, NewHand, Size, Col, Line)),
+(
+
+   checkWin(CurrentPlayer, Size, NewBoard, Col, Line);
+   (
+
+/* verificar ganhou*/
+
+/* senao change Player */
+   changePlayer(CurrentPlayer,NewCurrentPlayer,NrPlayers),
+   gamecycle(NewBoard, NewHand, NewCurrentPlayer, NrPlayers, Mode)
+  )
+)).
 
 checkEndGame([H|T],1):-
 H == [0,0,0],
 write('The game is a DRAW! There are no more pieces to play'),nl.
+
+
+chooseGameMode(Mode):-
+nl,
+write('What game mode? (single or multi)'),
+nl,
+read(Mode).
 
 
 choosePlayerNr(NrPlayers):-
@@ -157,7 +196,7 @@ read(Line-Col).
 
 /**********ITEMS**********/
 
-hand([[2,0,0],[3,3,3],[3,3,3],[3,3,3]]).
+hand([[3,3,3],[3,3,3],[3,3,3],[3,3,3]]).
 /*winCond(Player, List)*/
 winCondLocal(1, [b1,m1,s1]).
 winCondLocal(2, [b2,m2,s2]).
@@ -176,6 +215,10 @@ winCond(1, 'small', s1).
 winCond(2, 'small', s2).
 winCond(3, 'small', s3).
 winCond(4, 'small', s4).
+
+piece(1, 'big').
+piece(2, 'medium').
+piece(3, 'small').
 
 winner(Player):-  nl, write('Player '), write(Player), write(' Won!!'), nl.
 
@@ -197,6 +240,8 @@ checkHand(Player, Size, Hand1, Hand2) :-  getPiece(Player, Size, Hand1, Value), 
 playBig(Player, Line, Col, Tab1, Tab2) :- getCell(Line,Col,1,Tab1,Cell), Cell == 'b0', jointname('b',Player,Piece), setPiece(Line,Col,1,Piece, Tab1, Tab2).
 playMedium(Player, Line, Col, Tab1, Tab2) :- getCell(Line,Col,2,Tab1,Cell), Cell == 'm0', jointname('m',Player,Piece), setPiece(Line,Col,2,Piece, Tab1, Tab2).
 playSmall(Player, Line, Col, Tab1, Tab2) :- getCell(Line,Col,3,Tab1,Cell), Cell == 's0', jointname('s',Player,Piece), setPiece(Line,Col,3,Piece, Tab1, Tab2).
+
+/************WIN CONS************/
 
 checkWin(Player, Size, Tab, Line, Col):- (checkLocalWin(Player, Tab, Line, Col), winner(Player);
 										 checkLineWin(Player, Size, Tab, 1), winner(Player);
@@ -296,4 +341,10 @@ checkDiagWin(Player, Size, Tab):- getPiece(1, 1, Tab, Cell1),
 
 									
 
-/*********** WIN CONS************/
+/*********** AI ************/
+
+
+playAI(Player, Tab1, Tab2, Hand1, Hand2, Size, Line, Col):- random(1,3,Value), random(1,3,Line), random(1,3,Col), piece(Value, Size),
+										   Size == 'big', checkHand(Player, 1,Hand1,Hand2), playBig(Player, Line, Col, Tab1, Tab2);
+										   Size == 'medium', checkHand(Player, 2,Hand1,Hand2), playMedium(Player, Line, Col, Tab1, Tab2);
+										   Size == 'small', checkHand(Player, 3,Hand1,Hand2), playSmall(Player, Line, Col, Tab1, Tab2).
