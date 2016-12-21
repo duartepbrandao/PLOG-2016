@@ -51,6 +51,8 @@ makeTab(TAB,[H|R],N,Y):-
 
 makeTab(_,[],_,_).
 
+/************DRAW_TAB**************/
+
 printboard([]):- nl,!.
  
 printboard([X|List]) :-
@@ -83,3 +85,30 @@ write(X)),
 write('|'),
 printLineResult(List).
 	
+/**********POS_LIST***********/
+
+
+checkCell(Cell,X,Y,H):- integer(Cell), H = [Cell,X,Y].
+checkCell(_,_,_,_).
+
+searchTab(_,[],_,_,_).
+
+searchTAB(TAB,[H|R],N,N,N):-  
+							  getPosition(TAB,N,N,Cell),
+							  checkCell(Cell,N,N,H).
+							  
+searchTAB(TAB,[H|R],N,N,Y):-  
+							  getPosition(TAB,N,Y,Cell),
+							  checkCell(Cell,N,Y,H),
+							  NewY is Y+1,
+							  (var(H),
+							  searchTAB(TAB,[H|R],N,1,NewY));
+						      searchTAB(TAB,R,N,1,NewY).
+							  
+searchTAB(TAB,[H|R],N,X,Y):-  
+							  getPosition(TAB,X,Y,Cell),
+							  checkCell(Cell,X,Y,H),
+							  NewX is X+1,
+							  (var(H),
+							  searchTAB(TAB,[H|R],N,NewX,Y));
+							  searchTAB(TAB,R,N,NewX,Y).
