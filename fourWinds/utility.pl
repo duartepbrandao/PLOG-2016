@@ -50,3 +50,36 @@ makeTab(TAB,[H|R],N,Y):-
 							  makeTab(TAB,R,N,NewY).
 
 makeTab(_,[],_,_).
+
+printboard([]):- nl,!.
+ 
+printboard([X|List]) :-
+write('|'),
+	printLine(X),nl,
+    printboard(List).
+	
+printLine([])	:-!.
+printLine([0|List])	:-
+write(' '),write('|'),printLine(List).
+printLine([X|List])	:-
+write(X),write('|'),printLine(List).
+
+
+printResult([]):- nl,!.
+printResult([X|List]):-
+write('|'),
+	printLineResult(X),nl,
+    printResult(List).
+
+	
+%LEFT -1,UP -2, RIGHT -3, DOWN -4.
+printLineResult([]):-!.
+printLineResult([X|List]):-
+(X = -1,write('<');
+X = -2,write('^');
+X = -3,write('>');
+X = -4,write('v');
+write(X)),
+write('|'),
+printLineResult(List).
+	
