@@ -88,7 +88,7 @@ printLineResult(List).
 /**********POS_LIST***********/
 
 
-checkCell(Cell,X,Y,H):- integer(Cell), H = [Cell,X,Y].
+checkCell(Cell,X,Y,H):- var(Cell), H = [Cell,X,Y].
 checkCell(_,_,_,_).
 
 searchTab(_,[],_,_,_).
