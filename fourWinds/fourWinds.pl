@@ -3,14 +3,28 @@
 
 :- include('testTABS').
 :- include('utility').
+:- include('restrictions.pl').
 
-fourWinds(TAB,RESULT):-
+fourWinds(TAB,VARLIST):-
 
-	length(TAB,N),
-	lineLength(TAB,N),
+	length(TAB,N1),
 	
-	length(RESULT,N),
-	lineLength(RESULT,N).
+	makeTab(TAB,AUXTAB,N1,1),
+	
+	searchTAB(AUXTAB,NUMLIST,VARLIST,N1,1,1),
+	
+	length(VARLIST,N2),
+	
+	domain(VARLIST,1,N2),
+	
+	lineControl(TAB,NUMLIST,1),
+	
+	colControl(TAB,NUMLIST,1),
+	
+	labeling([],VARLIST).
+	
+	
+	
 	
 
 

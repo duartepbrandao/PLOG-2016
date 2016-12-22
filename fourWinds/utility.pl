@@ -51,6 +51,38 @@ makeTab(TAB,[H|R],N,Y):-
 
 makeTab(_,[],_,_).
 
+/************MAKE_VARTAB**************/
+
+setVar(0,H,_,_):- H = A.
+%setVar(_,H,1,NewCounter):- H = Counter, NewCounter is Counter+1.
+setVar(_,H,Counter,NewCounter):- H = Counter, NewCounter is Counter+1.
+
+makeVarList(TAB,[H|R],N,X,Y,Counter,NextCounter):-  
+							  getPosition(TAB,X,Y,Cell), 
+							  setVar(Cell,H,Counter,NewCounter), 
+							  NewX is X+1,
+							  makeVarList(TAB,R,N,NewX,Y,NewCounter,NewCounter).
+							  
+makeVarList(TAB,[H|R],N,N,Y,Counter,NextCounter):- 
+							  getPosition(TAB,N,Y,Cell), 
+							  setVar(Cell,H,Counter,NextCounter).
+
+makeVarList(_,[],_,_,_,_,_).
+
+
+makeVarTab(TAB,[H],N,N,Counter):-	  
+							  makeVarList(TAB,List,N,1,N,Counter,NewCounter),
+							  H = List.
+							  
+makeVarTab(TAB,[H|R],N,Y,Counter):- 
+trace,	
+							  makeVarList(TAB,List,N,1,Y,Counter,NewCounter),
+							  H = List,
+							  NewY is Y+1,
+							  makeVarTab(TAB,R,N,NewY,NewCounter).
+
+makeVarTab(_,[],_,_).
+
 /************DRAW_TAB**************/
 
 printboard([]):- nl,!.
@@ -87,28 +119,33 @@ printLineResult(List).
 	
 /**********POS_LIST***********/
 
+%Cell = Number, X = XCoord, Y = YCoord.
+checkCell(Cell,X,Y,H):- integer(Cell), H = Cell-X-Y.
 
-checkCell(Cell,X,Y,H):- var(Cell), H = [Cell,X,Y].
 checkCell(_,_,_,_).
 
-searchTab(_,[],_,_,_).
 
 searchTAB(TAB,[H|R],N,N,N):-  
-							  getPosition(TAB,N,N,Cell),
-							  checkCell(Cell,N,N,H).
+							  getPosition(TAB,N,N,Cell), 
+							  integer(Cell), H = Cell-N-N.
+							  
+searchTAB(TAB,[H|R],N,N,N).
+							
 							  
 searchTAB(TAB,[H|R],N,N,Y):-  
 							  getPosition(TAB,N,Y,Cell),
 							  checkCell(Cell,N,Y,H),
 							  NewY is Y+1,
-							  (var(H),
-							  searchTAB(TAB,[H|R],N,1,NewY));
-						      searchTAB(TAB,R,N,1,NewY).
+							  (var(H), 
+							  searchTAB(TAB,[H|R],N,1,NewY);
+						      searchTAB(TAB,R,N,1,NewY)).
 							  
 searchTAB(TAB,[H|R],N,X,Y):-  
 							  getPosition(TAB,X,Y,Cell),
 							  checkCell(Cell,X,Y,H),
 							  NewX is X+1,
-							  (var(H),
-							  searchTAB(TAB,[H|R],N,NewX,Y));
-							  searchTAB(TAB,R,N,NewX,Y).
+							  (var(H), 
+							  searchTAB(TAB,[H|R],N,NewX,Y);
+							  searchTAB(TAB,R,N,NewX,Y)).
+
+searchTAB(_,[],_,_,_).
