@@ -1,4 +1,6 @@
 :- use_module(library(lists)).
+:- use_module(library(clpfd)).
+:- use_module(library(restrictions)).
 
 /********LENGTH**********/	
 	
@@ -19,6 +21,9 @@ getCol(1, [Piece|_], Piece).
 getCol(Col, [_|Linelist], Piece) :- Col > 1,Newcol is Col - 1, getCol(Newcol, Linelist, Piece).
 
 getPosition(TAB, X, Y, N):- getLine(Y, TAB, Line), getCol(X, Line, N).
+
+getfullCol([H1|R1], X,[H2|R2]):- getCol(X, H1, H2), getfullCol(R1, X, R2).
+getfullCol([],_,[]).
 
 
 /**********MAKE_TAB**********/
@@ -53,35 +58,33 @@ makeTab(_,[],_,_).
 
 /************MAKE_VARTAB**************/
 
-setVar(0,H,_,_):- H = A.
-%setVar(_,H,1,NewCounter):- H = Counter, NewCounter is Counter+1.
+
+setVar(0,H,Counter,NewCounter):- H = A, NewCounter is Counter.
 setVar(_,H,Counter,NewCounter):- H = Counter, NewCounter is Counter+1.
 
-makeVarList(TAB,[H|R],N,X,Y,Counter,NextCounter):-  
-							  getPosition(TAB,X,Y,Cell), 
-							  setVar(Cell,H,Counter,NewCounter), 
-							  NewX is X+1,
-							  makeVarList(TAB,R,N,NewX,Y,NewCounter,NewCounter).
-							  
-makeVarList(TAB,[H|R],N,N,Y,Counter,NextCounter):- 
+makeVarList(TAB,[H],N,N,Y,Counter,NewCounter):- 
 							  getPosition(TAB,N,Y,Cell), 
-							  setVar(Cell,H,Counter,NextCounter).
+							  setVar(Cell,H,Counter,NewCounter).
 
+makeVarList(TAB,[H|R],N,X,Y,Counter,NewCounter):-  
+							  getPosition(TAB,X,Y,Cell), 
+							  setVar(Cell,H,Counter,NextCounter), 
+							  NewX is X+1,
+							  makeVarList(TAB,R,N,NewX,Y,NextCounter,NewCounter).
+							 							  
 makeVarList(_,[],_,_,_,_,_).
-
 
 makeVarTab(TAB,[H],N,N,Counter):-	  
 							  makeVarList(TAB,List,N,1,N,Counter,NewCounter),
 							  H = List.
 							  
-makeVarTab(TAB,[H|R],N,Y,Counter):- 
-trace,	
+makeVarTab(TAB,[H|R],N,Y,Counter):- 	
 							  makeVarList(TAB,List,N,1,Y,Counter,NewCounter),
 							  H = List,
 							  NewY is Y+1,
 							  makeVarTab(TAB,R,N,NewY,NewCounter).
 
-makeVarTab(_,[],_,_).
+makeVarTab(_,[],_,_,_).
 
 /************DRAW_TAB**************/
 
@@ -149,3 +152,25 @@ searchTAB(TAB,[H|R],N,X,Y):-
 							  searchTAB(TAB,R,N,NewX,Y)).
 
 searchTAB(_,[],_,_,_).
+
+/***********MAKE_DOMAIN************/
+
+makeDomain([H|R],N):- domain(H,1,N), makeDomain(R,N).
+
+makeDomain([],_).
+
+makeLabeling([H|R]):- labeling([],H), makeLabeling(R).
+
+makeLabeling([]).
+
+/***********OVERPASS_CONTROL***********/
+
+overPass(VarList,N,[_-X-Y|R]):- N > 0, 
+									getLine(N,VarList,Line), 
+									getfullCol(VarList,Y,Col),
+									controlLineOverpass(Line,N,X,1),
+									controlColOverpass(Col,N,Y,1),
+									NewN is N - 1,
+									overPass(VarList,NewN,R).
+
+overPass(_,_,[]).

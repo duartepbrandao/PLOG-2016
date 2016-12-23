@@ -11,17 +11,22 @@ fourWinds(TAB,VARLIST):-
 	
 	makeTab(TAB,AUXTAB,N1,1),
 	
-	searchTAB(AUXTAB,NUMLIST,VARLIST,N1,1,1),
+	searchTAB(AUXTAB,NUMLIST,N1,1,1),
+	makeVarTab(TAB,VARLIST,N1,1,1),
 	
-	length(VARLIST,N2),
+	length(NUMLIST,N2),
 	
-	domain(VARLIST,1,N2),
+	makeDomain(VARLIST,N2,1),
 	
-	lineControl(TAB,NUMLIST,1),
 	
-	colControl(TAB,NUMLIST,1),
+	lineControl(VARLIST,NUMLIST,1),
 	
-	labeling([],VARLIST).
+	
+	colControl(VARLIST,NUMLIST,1),
+	
+	overPass(VARLIST,N2,NUMLIST),
+	
+	makeLabeling(VARLIST).
 	
 	
 	
