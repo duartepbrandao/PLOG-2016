@@ -16,15 +16,16 @@ fourWinds(TAB,VARLIST):-
 	
 	length(NUMLIST,N2),
 	
-	makeDomain(VARLIST,N2,1),
+	write(NUMLIST),
+	nl,
 	
+	makeDomain(VARLIST,N2),
 	
 	lineControl(VARLIST,NUMLIST,1),
 	
-	
 	colControl(VARLIST,NUMLIST,1),
 	
-	overPass(VARLIST,N2,NUMLIST),
+	overPass(VARLIST,1,NUMLIST),
 	
 	makeLabeling(VARLIST).
 	

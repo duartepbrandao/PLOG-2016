@@ -128,12 +128,9 @@ checkCell(Cell,X,Y,H):- integer(Cell), H = Cell-X-Y.
 checkCell(_,_,_,_).
 
 
-searchTAB(TAB,[H|R],N,N,N):-  
+searchTAB(TAB,[H],N,N,N):-  
 							  getPosition(TAB,N,N,Cell), 
-							  integer(Cell), H = Cell-N-N.
-							  
-searchTAB(TAB,[H|R],N,N,N).
-							
+							  checkCell(Cell,N,N,H).							
 							  
 searchTAB(TAB,[H|R],N,N,Y):-  
 							  getPosition(TAB,N,Y,Cell),
@@ -165,12 +162,19 @@ makeLabeling([]).
 
 /***********OVERPASS_CONTROL***********/
 
-overPass(VarList,N,[_-X-Y|R]):- N > 0, 
-									getLine(N,VarList,Line), 
-									getfullCol(VarList,Y,Col),
-									controlLineOverpass(Line,N,X,1),
-									controlColOverpass(Col,N,Y,1),
-									NewN is N - 1,
+overPass(VarList,N,[_-X-Y|R]):- 	
+									getLine(Y,VarList,Line), 
+									getfullCol(VarList,X,Col),
+									%write(N),
+									%nl,
+									%write(Line),
+									%nl,
+									%write(Col),
+									%nl,
+									controlOverpass(Line,N,X,1),
+									controlOverpass(Col,N,Y,1),
+									%write('Here3'),
+									NewN is N + 1,
 									overPass(VarList,NewN,R).
 
 overPass(_,_,[]).
