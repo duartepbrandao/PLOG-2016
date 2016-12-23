@@ -98,7 +98,14 @@ write('|'),
 printLine([])	:-!.
 printLine([0|List])	:-
 write(' '),write('|'),printLine(List).
+
+
 printLine([X|List])	:-
+X <10,write(' '),
+write(X),write('|'),printLine(List).
+
+printLine([X|List])	:-
+%write(' '),
 write(X),write('|'),printLine(List).
 
 
@@ -178,3 +185,10 @@ overPass(VarList,N,[_-X-Y|R]):-
 									overPass(VarList,NewN,R).
 
 overPass(_,_,[]).
+
+
+printboard([]):- !.
+    
+printboard([X|List]) :-
+    write(X),nl,
+    printboard(List).

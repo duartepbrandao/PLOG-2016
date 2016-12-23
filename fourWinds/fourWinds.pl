@@ -27,7 +27,9 @@ fourWinds(TAB,VARLIST):-
 	
 	overPass(VARLIST,1,NUMLIST),
 	
-	makeLabeling(VARLIST).
+	makeLabeling(VARLIST),
+	
+	printboard(VARLIST).
 	
 	
 	
