@@ -16,9 +16,6 @@ fourWinds(TAB,VARLIST):-
 	
 	length(NUMLIST,N2),
 	
-	write(NUMLIST),
-	nl,
-	
 	makeDomain(VARLIST,N2),
 	
 	lineControl(VARLIST,NUMLIST,1),
@@ -27,9 +24,19 @@ fourWinds(TAB,VARLIST):-
 	
 	overPass(VARLIST,1,NUMLIST),
 	
-	makeLabeling(VARLIST),
+	nl,
 	
-	printboard(VARLIST).
+	statistics(walltime, _), 	
+	makeLabeling(VARLIST), 	
+	statistics(walltime, [_, ElapsedTime | _]), 	
+	format('An answer has been found!~nElapsed time: ~3d seconds', ElapsedTime),
+	nl, fd_statistics, nl, nl,
+	
+	write('|###############|'), nl,
+	write('| RESULT TABLE: |'), nl,
+	write('|###############|'), nl, nl, nl,
+	
+	printboard(VARLIST), nl, nl, nl.
 	
 	
 	
